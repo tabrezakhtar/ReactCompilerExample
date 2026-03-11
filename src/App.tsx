@@ -1,70 +1,97 @@
-import { useState, useEffect } from 'react'
-import useSWR from 'swr';
-import './App.css'
-import ShowItem from './ShowItem';
-import { fetcher } from './helpers';
+import { useState, useEffect } from 'react';
+import React from 'react';
+import './App.css';
 
 interface Show {
-  id: number;
-  name: string;
-  image?: { medium: string; original: string };
-  summary?: string;
+  show: {
+    name: string;
+    rating?: {
+      average: number;
+    };
+  };
+}
+
+interface ChildProps {
+  results: Show[];
+  query: string;
 }
 
 function App() {
-  const [query, setQuery] = useState('');
-  const [searchKey, setSearchKey] = useState<string | null>(null);
-  const [shows, setShows] = useState<Show[]>([]);
+  const [count, setCount] = useState<number>(0);
+  const [query, setQuery] = useState<string>('');
+  const [results, setResults] = useState<Show[]>([]);
 
-  const { data, isLoading } = useSWR(
-    searchKey
-      ? `https://api.tvmaze.com/search/shows?q=${encodeURIComponent(
-          searchKey
-        )}`
-      : null,
-    fetcher
-  );
+  // ────────────────────────────────────────────────
+  // Without useCallback: new function every render →
+  // Child re-renders even when only count changes
+  // ────────────────────────────────────────────────
+  const searchShows = (q: string) => {
+    if (!q.trim()) {
+      setResults([]);
+      return;
+    }
+
+    fetch(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(q)}`)
+      .then(res => res.json())
+      .then(data => setResults(data))
+      .catch(err => {
+        console.error(err);
+        setResults([]);
+      });
+  };
 
   useEffect(() => {
-    if (data) {
-      setShows(data.map((item: any) => item.show));
-    }
-  }, [data]);
-
-  const search = () => {
-    if (!query.trim()) return;
-    setSearchKey(query.trim());
-  };
+    searchShows(query);
+  }, [query, searchShows]);
 
   return (
     <div className="App">
-      <h1>TVMaze Search</h1>
-      <div>
+      <div className="demo-controls">
+        <button onClick={() => setCount(c => c + 1)} className="count-button">
+          Count: {count}
+        </button>
+        <p className="hint">↑ Click to test re-renders</p>
+      </div>
+
+      <div className="search-box">
         <input
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') search();
-          }}
-          placeholder="Search shows..."
+          onChange={e => setQuery(e.target.value)}
+          placeholder="Search TV shows (e.g. breaking)"
         />
-        <button onClick={search} disabled={isLoading}>
-          Search
-        </button>
       </div>
-      {isLoading && <p>Loading...</p>}
-      <ul>
-        {shows.map((show) => (
-          <ShowItem
-            key={show.id}
-            show={show}
-            onSelect={(s) => console.log('selected', s.name)}
-          />
-        ))}
-      </ul>
+
+      <Child results={results} query={query} />
     </div>
   );
 }
 
-export default App
+const Child: React.FC<ChildProps> = React.memo(({ results, query }) => {
+  console.log("Child rendered"); // ← with useCallback: only when query/results change
+
+  return (
+    <div className="results-container">
+      {query && (
+        <p className="results-summary">
+          Results for "{query}": <strong>{results.length}</strong> shows found
+        </p>
+      )}
+
+      {results.length > 0 && (
+        <ul className="results-list">
+          {results.slice(0, 6).map((item, i) => (
+            <li key={i} className="result-item">
+              <span className="show-name">{item.show.name}</span>
+              {item.show.rating?.average && (
+                <span className="show-rating"> ({item.show.rating.average}/10)</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+});
+
+export default App;

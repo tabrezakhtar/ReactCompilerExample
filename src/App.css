@@ -140,3 +140,93 @@ input[type="text"] {
   cursor: pointer;
   color: var(--modal-text);
 }
+
+/* Demo controls styling */
+.demo-controls {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: rgba(100, 108, 255, 0.1);
+  border-radius: 8px;
+}
+
+.count-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background: #646cff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.count-button:hover {
+  background: #535bf2;
+}
+
+.hint {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.search-box {
+  margin: 1.5rem 0;
+}
+
+.search-box input {
+  width: 100%;
+  max-width: 500px;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  transition: border-color 0.2s;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: #646cff;
+}
+
+/* Results styling */
+.results-container {
+  margin-top: 2rem;
+}
+
+.results-summary {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.results-list {
+  list-style: none;
+  padding: 0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.result-item {
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  background: #f9f9f9;
+  border-left: 3px solid #646cff;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.result-item:hover {
+  background: #f0f0f0;
+}
+
+.show-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.show-rating {
+  color: #666;
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
+}
