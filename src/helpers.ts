@@ -12,3 +12,6 @@ export const stripHtml = (html?: string) => {
   tmp.innerHTML = html;
   return tmp.textContent || tmp.innerText || "";
 };
+
+// generic fetcher for SWR
+export const fetcher = (url: string) => fetch(url).then((res) => res.json());

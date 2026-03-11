@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { stripHtml } from './helpers';
+import useSWR from 'swr';
+import { stripHtml, fetcher } from './helpers';
 import Modal from './Modal';
 
 interface Show {
@@ -21,23 +22,15 @@ interface Props {
 
 const ShowItem: React.FC<Props> = ({ show, onSelect }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [details, setDetails] = useState<ShowDetails | null>(null);
-  const [loading, setLoading] = useState(false);
 
-  const openModal = async () => {
+  const { data: details, isLoading: loading } = useSWR<ShowDetails>(
+    modalOpen ? `https://api.tvmaze.com/shows/${show.id}` : null,
+    fetcher
+  );
+
+  const openModal = () => {
     setModalOpen(true);
     onSelect(show);
-    if (!details) {
-      setLoading(true);
-      try {
-        const res = await fetch(`https://api.tvmaze.com/shows/${show.id}`);
-        const data = await res.json();
-        setDetails(data);
-      } catch (err) {
-        console.error('fetch details failed', err);
-      }
-      setLoading(false);
-    }
   };
 
   const closeModal = () => setModalOpen(false);
