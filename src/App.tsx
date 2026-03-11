@@ -17,14 +17,13 @@ interface ChildProps {
 }
 
 function App() {
-  const [count, setCount] = useState<number>(0);
   const [query, setQuery] = useState<string>('');
   const [results, setResults] = useState<Show[]>([]);
 
-  // ────────────────────────────────────────────────
-  // Without useCallback: new function every render →
-  // Child re-renders even when only count changes
-  // ────────────────────────────────────────────────
+  /*
+    Without useCallback: new function every render
+    Child re-renders even when only count changes
+  */
   const searchShows = (q: string) => {
     if (!q.trim()) {
       setResults([]);
@@ -46,13 +45,6 @@ function App() {
 
   return (
     <div className="App">
-      <div className="demo-controls">
-        <button onClick={() => setCount(c => c + 1)} className="count-button">
-          Count: {count}
-        </button>
-        <p className="hint">↑ Click to test re-renders</p>
-      </div>
-
       <div className="search-box">
         <input
           type="text"
